@@ -31,6 +31,21 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(e.getHttpStatus()).body(errorResponse);
     }
 
+    // 处理 IllegalArgumentException
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<AuthDtos.ErrorResponse> handleIllegalArgument(
+        IllegalArgumentException e, 
+        HttpServletRequest req) {
+        var body = new AuthDtos.ErrorResponse(
+            "INVALID_ARGUMENT",
+            e.getMessage(),
+            400,
+            req.getRequestURI(),
+            Instant.now()
+        );
+        return ResponseEntity.badRequest().body(body);
+    }
+
     // 处理@Valid参数校验失败
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<AuthDtos.ErrorResponse> handleValidation(MethodArgumentNotValidException e, HttpServletRequest req) {

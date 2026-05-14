@@ -8,10 +8,21 @@ import java.time.LocalDateTime;
 public class PostDtos {
     // 提交/修改一篇文章的请求体
     public record PostRequest(
-            @NotBlank @Size(min = 1, max = 20) String title,
-            @NotBlank @Size(min = 1, max =  200_000) String content,
-            @NotBlank @Size(min = 1, max = 200) String summary,
-            @NotBlank @Size(min = 1, max = 100) String category
+            @NotBlank(message = "标题不能为空") 
+            @Size(min = 1, max = 20, message = "标题长度必须在1-20之间") 
+            String title,
+
+            @NotBlank(message = "内容不能为空")  
+            @Size(min = 1, max =  200000, message = "内容长度必须在1-200000之间") 
+            String content,
+
+            @NotBlank(message = "摘要不能为空")  
+            @Size(min = 1, max = 200, message = "摘要长度必须在1-200之间") 
+            String summary,
+
+            @NotBlank(message = "分类不能为空")  
+            @Size(min = 1, max = 100, message = "分类长度必须在1-100之间") 
+            String category            
     ) {}
 
 //    // 删除一篇文章的请求体

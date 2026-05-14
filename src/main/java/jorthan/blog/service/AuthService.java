@@ -8,8 +8,8 @@ import jorthan.blog.repository.AuthRepository;
 import jorthan.blog.token.TokenStore;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.beans.Encoder;
 import java.time.LocalDateTime;
 
 @Service
@@ -23,7 +23,19 @@ public class AuthService {
         this.tokenStore = tokenStore;
     }
 
+    @Transactional
     public AuthDtos.RegisterResponse register(AuthDtos.RegisterRequest req) {
+
+        // 检查用户名是否已存在
+        if (authRepository.findByUserName(req.userName()).isPresent()) {
+            throw new ApiExceptions.Conflict("Username already exists");
+        }
+
+        // 检查邮箱是否已存在
+        if (authRepository.findByEmail(req.email()).isPresent()) {
+            throw new ApiExceptions.Conflict("Email already exists");
+        }
+
         User author = new User();
         author.setUserName(req.userName());
         author.setEmail(req.email());
@@ -38,6 +50,10 @@ public class AuthService {
 
     public AuthDtos.LoginResponse login(AuthDtos.LoginRequest req) {
         User u = authRepository.findByEmail(req.email()).orElseThrow(() -> new ApiExceptions.NotFound("Cannot get the valid user"));
+        // 更新登录时间
+        u.setLastLoginAt(LocalDateTime.now());
+        authRepository.save(u);
+        
         String token = tokenStore.getToken(u.getId());
 
         return toLogInDto(u, token);

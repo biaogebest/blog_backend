@@ -12,8 +12,6 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Objects;
-
 @RestController
 @RequestMapping("/api/post")
 public class PostController {
@@ -24,12 +22,23 @@ public class PostController {
     }
 
     @GetMapping("/list") // 查看所有的文章
-    public ResponseEntity<Page<PostDtos.PostSummaryResponse>> list(@PageableDefault(sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable) {
-        return ResponseEntity.ok(postService.list(pageable));
+    public ResponseEntity<Page<PostDtos.PostSummaryResponse>> 
+    list(
+        @RequestParam(required = false) String category,  // 可选的分类筛选
+        @PageableDefault(sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable) {
+        Page<PostDtos.PostSummaryResponse> result;
+        if (category != null && !category.isEmpty()) {
+            result = postService.getPostsByCategory(category, pageable);
+        } else {
+            result = postService.getAllPosts(pageable);
+        }
+    
+        return ResponseEntity.ok(result);
     }
 
     @PostMapping("/submit") // 提交一篇文章
-    public ResponseEntity<PostDtos.PostDetailResponse> submit(@Valid @RequestBody PostDtos.PostRequest body, HttpServletRequest req) {
+    public ResponseEntity<PostDtos.PostDetailResponse> submit(
+        @Valid @RequestBody PostDtos.PostRequest body, HttpServletRequest req) {
         // 先获取userId
         Long userId = (Long)req.getAttribute(AuthInterceptor.ATTR_USER_ID);
 

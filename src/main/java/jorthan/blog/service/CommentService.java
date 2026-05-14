@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 
 @Service
@@ -51,6 +52,13 @@ public class CommentService {
         comment = commentRepository.save(comment);
 
         return toCommentListResponse(comment);
+    }
+
+    public List<CommentDtos.CommentListResponse> getCommentsByUser(Long userId) {
+        var comments = commentRepository.findByUserId(userId);
+        return comments.stream()
+            .map(this::toCommentListResponse)
+            .toList();
     }
 
     public CommentDtos.CommentDeleteResponse delete(HttpServletRequest req, Long postId, Long commentId) {

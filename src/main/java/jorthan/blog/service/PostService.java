@@ -4,15 +4,12 @@ import jakarta.servlet.http.HttpServletRequest;
 import jorthan.blog.auth.AuthInterceptor;
 import jorthan.blog.dtos.PostDtos;
 import jorthan.blog.entity.Post;
-import jorthan.blog.expcetion.ApiException;
 import jorthan.blog.expcetion.ApiExceptions;
 import jorthan.blog.repository.AuthRepository;
 import jorthan.blog.repository.PostRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 @Service
 public class PostService {
@@ -24,9 +21,8 @@ public class PostService {
         this.authRepository = authRepository;
     }
 
-    public Page<PostDtos.PostSummaryResponse> list(Pageable pageable) {
+    public Page<PostDtos.PostSummaryResponse> getAllPosts(Pageable pageable) {
         Page<PostDtos.PostSummaryResponse> lists = postRepository.findAllByExist(true, pageable).map(this::toPostSummaryResponse);
-
         return lists;
     }
 
@@ -41,6 +37,11 @@ public class PostService {
         post = postRepository.save(post);
 
         return toPostDetailResponse(post);
+    }
+
+    public Page<PostDtos.PostSummaryResponse> getPostsByCategory(String category, Pageable pageable) {
+        return postRepository.findByCategoryAndExist(category, true, pageable)
+            .map(this::toPostSummaryResponse);
     }
 
     public PostDtos.PostDetailResponse read(Long postId) {

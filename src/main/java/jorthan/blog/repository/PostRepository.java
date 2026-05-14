@@ -13,4 +13,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Page<Post> findAllByExist(boolean exist, Pageable pageable);
 
     Optional<Post> findByIdAndExist(Long id, boolean exist);
+
+    Page<Post> findByCategoryAndExist(String category, Boolean exist, Pageable pageable);
 }

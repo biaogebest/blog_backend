@@ -4,6 +4,9 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import jorthan.blog.dtos.CommentDtos;
 import jorthan.blog.service.CommentService;
+
+import java.util.List;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -31,5 +34,10 @@ public class CommentController {
     @PostMapping("/delete/{postId}/{commentId}") // 删除评论
     public ResponseEntity<CommentDtos.CommentDeleteResponse> delete(HttpServletRequest req, @PathVariable Long postId, @PathVariable Long commentId) {
         return ResponseEntity.ok(commentService.delete(req, postId, commentId));
+    }
+
+    @GetMapping("/user/{userId}") // 查看用户评论
+    public ResponseEntity<List<CommentDtos.CommentListResponse>> getCommentsByUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(commentService.getCommentsByUser(userId));
     }
 }

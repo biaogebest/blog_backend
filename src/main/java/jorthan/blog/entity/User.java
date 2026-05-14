@@ -32,6 +32,17 @@ public class User {
     @Column(name = "deleted_at", nullable = true)
     private LocalDateTime deletedAt;
 
+    @Column(name = "last_login_at", nullable = true)
+    private LocalDateTime lastLoginAt;
+
+    public LocalDateTime getLastLoginAt() { 
+        return this.lastLoginAt; 
+    }
+    
+    public void setLastLoginAt(LocalDateTime lastLoginAt) {
+         this.lastLoginAt = lastLoginAt; 
+    }
+
     @PrePersist
     public void prePersist() {
         if (this.createdAt == null) {
